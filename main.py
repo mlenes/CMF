@@ -11,7 +11,7 @@ def main():
 	init_u = make_grid.init_u_dirichlet(opts.N, opts.flowrate, opts.wallspeed, dy_arr)
 	init_mu = make_grid.init_mu(opts.N, opts.mu)
 	u = simulate.simulation_pressure(init_u, init_mu, dy_arr, opts.iterations, opts.p_grad)
-	print(u)
+	visuals.plot_profile(dy_arr, u[0])
 
 if __name__ == "__main__":
 	main()

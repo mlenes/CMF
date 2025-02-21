@@ -22,11 +22,11 @@ def simulation_pressure(init_u, init_mu, dy_arr, iterations, p_grad):
     u[0,:] = init_u
     
     mu = np.zeros((iterations, N))
-    mu[0,:] = init_mu
+    mu[:,:] = init_mu
     
     for n in range(iterations):
-        for i in range(1,N):
-            u[n,i] = (1/2)*(dy_arr[i]**2)*p_grad/mu[n,i] - (1/2)*u[n,i+1] - (1/2)*u[n,i-1]
+        for i in range(1,N-1):
+            u[n,i] = (1/2)*(dy_arr[i-1]**2)*p_grad/mu[n,i] - (1/2)*u[n,i+1] - (1/2)*u[n,i-1]
             #hier moeten we dan u in de ghost cells updaten, maar hoe is afhankelijk van 
             #het type boundary condition, voelt stom om hier weer allemaal if statements te maken?
     return u
