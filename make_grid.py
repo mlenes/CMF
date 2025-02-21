@@ -20,19 +20,21 @@ def init_mu(N,mu):
     return viscosity
 
 
-def init_u_dirichlet(N,u,wallspeed):
+def init_u_dirichlet(N,flowrate,wallspeed,vertical_distance):
     #create array of velocities at gridpoints
     #Dirichelt boundary conditions dictate value of first and last cell, we set last boundary to 0
+    u=flowrate/np.sum(vertical_distance[:-1])
     velocity=np.ones(N)*u
-    velocity[0]=wallspeed+wallspeed-u
+    velocity[0]=wallspeed+wallspeed-u #velocity is defined a center ghost cell??
     velocity[-1]=-u
     return velocity
 
-def init_u_neumann(N,u,wallgradient,vertical_distance):
+def init_u_neumann(N,flowrate,wallgradient,vertical_distance):
     #create array of initial velocities at gridpoints
     #Neumann boundary conditions dictate gradient of velocity at first and last cell
+    u=flowrate/np.sum(vertical_distance[:-1])
     velocity=np.ones(N)*u  
-    velocity[0]=velocity[1]-vertical_distance[0]*wallgradient
+    velocity[0]=velocity[1]-vertical_distance[0]*wallgradient  #velocity at center ghost cell??
     velocity[-1]=velocity[-2]+vertical_distance[-1]*wallgradient
     return velocity
 
