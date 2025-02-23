@@ -13,12 +13,10 @@ def vertical_dist(N,dy,Nlayers,layerfactor):
             vertical_distance[-(i+1)]=vertical_distance[-(i+1)]/(layerfactor**(Nlayers-i))
     return vertical_distance
 
-
 def init_mu(N,mu):
     #create array of viscosity at gridpoints
     viscosity=np.ones(N)*mu
     return viscosity
-
 
 def init_u_dirichlet(N,flowrate,wallspeed,vertical_distance):
     #create array of velocities at gridpoints
