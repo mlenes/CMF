@@ -32,7 +32,7 @@ def assemble_matrix(N, L, mu, p_grad, bndry_type, u_wall, grad_wall):
 
 		A[-1] = np.zeros(A[0].shape)
 		A[-1,-1] = 1
-		A[-1,-1] = -1
+		A[-1,-2] = -1
 
 		b[0] = - grad_wall*dy
 		b[-1] = grad_wall*dy
