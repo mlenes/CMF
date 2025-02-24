@@ -16,25 +16,29 @@ def assemble_matrix(N, L, mu, p_grad, bndry_type, u_wall, grad_wall):
 		A[i,i] = -(mu_faces[i] + mu_faces[i+1])/dy**2
 
 	if bndry_type == 'dirichlet':
-		A[0] = np.zeros(A[0].shape)
+		A[0, :] = 0
 		A[0,0] = 1
 
-		A[-1] = np.zeros(A[0].shape)
+		A[-1, :] = 0
 		A[-1,-1] = 1
 
 		b[0] = u_wall
 		b[-1] = u_wall
 
 	if bndry_type == 'neumann':
-		A[0] = np.zeros(A[0].shape)
+		A[0, :] = 0
 		A[0,0] = 1
 		A[0,1] = -1
 
-		A[-1] = np.zeros(A[0].shape)
+		A[-1, :] = 0
 		A[-1,-1] = 1
 		A[-1,-2] = -1
 
 		b[0] = - grad_wall*dy
 		b[-1] = grad_wall*dy
+
+		A[N//2, :] = 0
+		A[N//2, N//2] = 1  # Set velocity reference at middle
+		b[N//2] = 0  # Reference velocity set to zero (could be any value)
 
 	return A, b
