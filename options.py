@@ -14,6 +14,7 @@ def get_options():
 	parser.add_argument("--N", help='Amount of grid points', type=int, default=50)
 	parser.add_argument("--mu", help='Molecular viscosity', type=float, default=0.001)
 	parser.add_argument("--wallspeed", help='speed of wall', type=int, default=0)
+	parser.add_argument("--bndry_type", help='Type of boundary conditions at the wall', type=str, default='dirichlet')
 	parser.add_argument("--wallgradient", help='gradient of velocity at the wall', type=float, default=0)
 	parser.add_argument("--flowrate", help='Flow rate global boundary condition', type=float, default=2)
 	parser.add_argument("--L", help="Width of the channel", type=float, default=1)
