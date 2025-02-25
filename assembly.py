@@ -2,8 +2,8 @@ import numpy as np
 
 def assemble_matrix(N, L, mu, p_grad, bndry_type, u_wall, grad_wall):
 	dy = L/(N-1)
-	A = np.zeros((N-2, N-2)) # Coefficient matrix
-	b = np.full(N-2, p_grad) # Right hand side
+	A = np.zeros((N-2, N-2),dtype=float) # Coefficient matrix
+	b = np.full(N-2, p_grad, dtype=float) # Right hand side
 
 	# Compute viscosity at the faces of the cells
 	mu_faces = (mu[:-1] + mu[1:])/2
@@ -34,7 +34,7 @@ def assemble_matrix(N, L, mu, p_grad, bndry_type, u_wall, grad_wall):
 		A[-1,-1] = 1
 		A[-1,-2] = -1
 
-		b[0] = - grad_wall*dy
+		b[0] = grad_wall*dy
 		b[-1] = grad_wall*dy
 
 		A[N//2, :] = 0
