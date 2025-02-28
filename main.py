@@ -25,7 +25,8 @@ def main():
             u = np.linalg.solve(A, b_new)
 
     elif opts.flow_type == 'turbulent':
-        pass
+        for _ in range(opts.iterations):
+            pass
 
     else:
         print("Flow type not implemented")
