@@ -10,7 +10,7 @@ def main():
     global_vector = np.array([1,0]) #default is given pressure gradient
     if opts.global_type=="flowrate":
         global_vector = np.array([0,1])
-    p_grad =  global_vector*[opts.p_grad , 4*opts.flowrate/opts.L]
+    p_grad =  np.inner(global_vector, [opts.p_grad , 4*opts.flowrate/opts.L])
 
     A = assembly.assemble_A(opts.N, opts.L, opts.mu, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
     b = assembly.assemble_b(opts.N, opts.L, opts.mu, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)

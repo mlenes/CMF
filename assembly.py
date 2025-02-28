@@ -8,12 +8,10 @@ def assemble_A(N, L, mu, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	# Compute viscosity at the faces of the cells
 	mu_faces = init_mu_faces(N, mu)
 	
-	for i in range(N+1):
-		if i > 0:
-			A[i, i-1] = mu_faces[i]/dy**2
-		if i < N:
-			A[i , i+1] = mu_faces[i+1]/dy**2
-		A[i,i] = -(mu_faces[i] + mu_faces[i+1])/dy**2
+	for i in range(1, N):
+		A[i, i-1] = mu_faces[i-1]/dy**2
+		A[i , i+1] = mu_faces[i]/dy**2
+		A[i,i] = -(mu_faces[i-1] + mu_faces[i])/dy**2
 	
 	c1_bot, c1_top = get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top)
 	
