@@ -16,7 +16,7 @@ def get_options():
     parser.add_argument("--bndry_top", help="Boundary condition type on top wall", type=str, default='dirichlet')
     parser.add_argument("--bndry_val_bot", help="Boundary value on bottom wall", type=float, default=0)
     parser.add_argument("--bndry_val_top", help="Boundary value on top wall", type=float, default=0)
-    
+    parser.add_argument("--flow_type", help="Either laminar or turbulent", type=str, default='laminar')
     
     opts = parser.parse_args()
     return opts
