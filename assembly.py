@@ -45,13 +45,17 @@ def init_mu_faces(N,mu):
 def get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	if bndry_bot == 'dirichlet':
 		c1_bot = 1
-	else:
+	elif bndry_bot in ['neumann', 'stress']:
 		c1_bot = -1
+	else:
+		print("Boundary type not implemented")
 		
 	if bndry_top == 'dirichlet':
 		c1_top = 1
-	else:
+	elif bndry_top in ['neumann', 'stress']:
 		c1_top = -1
+	else:
+		print("Boundary type not implemented")
 
 	return c1_bot, c1_top
     
@@ -60,14 +64,18 @@ def get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, dy, mu_face
 		c2_bot = 2*bndry_val_bot
 	elif bndry_bot == 'neumann':
 		c2_bot = -dy*bndry_val_bot
-	else:
+	elif bndry_bot == 'stress':
 		c2_bot = -dy*bndry_val_bot/(mu_faces[0])
+	else:
+		print("Boundary type not implemented")
 		
 	if bndry_top == 'dirichlet':
-		c2_top = 2*bndry_val_bot
+		c2_top = 2*bndry_val_top
 	elif bndry_top == 'neumann':
-		c2_top = dy*bndry_val_bot
+		c2_top = dy*bndry_val_top
+	elif bndry_top == 'stress':
+		c2_top = dy*bndry_val_top/(mu_faces[-1])
 	else:
-		c2_top = dy*bndry_val_bot/(mu_faces[-1])
+		print("Boundary type not implemented")
 
 	return c2_bot, c2_top
