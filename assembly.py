@@ -8,14 +8,14 @@ def assemble_A(N, L, mu, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	# Compute viscosity at the faces of the cells
 	mu_faces = init_mu_faces(N, mu)
 	
-	for i in range(N+2):
+	for i in range(N+1):
 		if i > 0:
 			A[i, i-1] = mu_faces[i]/dy**2
-		if i < N-3:
+		if i < N:
 			A[i , i+1] = mu_faces[i+1]/dy**2
 		A[i,i] = -(mu_faces[i] + mu_faces[i+1])/dy**2
 	
-	c1_bot, c1_top = get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot)
+	c1_bot, c1_top = get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top)
 	
 	#bottom boundary condition
 	A[0,0] = 1
@@ -25,14 +25,14 @@ def assemble_A(N, L, mu, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	
 	return A
 
-def assemble_b(N, L, mu, p_grad):
+def assemble_b(N, L, mu, p_grad, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	b = np.full(N+1, p_grad, dtype=float) # Right hand side
 	
 	dy = get_dy(N, L)
 	# Compute viscosity at the faces of the cells
 	mu_faces = init_mu_faces(N, mu)
 	
-	b[0], b[-1] = get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot, dy, mu_faces)
+	b[0], b[-1] = get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, dy, mu_faces)
 	return b
 
 def get_dy(N, L):
@@ -44,7 +44,7 @@ def init_mu_faces(N,mu):
 	mu_faces = (viscosity[:-1] + viscosity[1:])/2
 	return mu_faces
     
-def get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot):
+def get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	if bndry_bot == 'dirichlet':
 		c1_bot = 1
 	else:
@@ -57,7 +57,7 @@ def get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot):
 
 	return c1_bot, c1_top
     
-def get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot, dy, mu_faces):
+def get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, dy, mu_faces):
 	if bndry_bot == 'dirichlet':
 		c2_bot = 2*bndry_val_bot
 	elif bndry_bot == 'neumann':
@@ -66,7 +66,7 @@ def get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot, dy, mu_face
 		c2_bot = -dy*bndry_val_bot/(mu_faces[0])
 		
 	if bndry_top == 'dirichlet':
-		c2_tpo = 2*bndry_val_bot
+		c2_top = 2*bndry_val_bot
 	elif bndry_top == 'neumann':
 		c2_top = dy*bndry_val_bot
 	else:
