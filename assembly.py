@@ -1,44 +1,75 @@
 import numpy as np
 
-def assemble_matrix(N, L, mu, p_grad, bndry_type, u_wall, grad_wall):
-	dy = L/(N-1)
-	A = np.zeros((N-2, N-2),dtype=float) # Coefficient matrix
-	b = np.full(N-2, p_grad, dtype=float) # Right hand side
-
-	# Compute viscosity at the faces of the cells
-	mu_faces = (mu[:-1] + mu[1:])/2
+def assemble_A(N, L, mu, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	
-	for i in range(1, N-2):
+	A = np.zeros((N+1, N+1),dtype=float) # Coefficient matrix
+
+	dy = get_dy(N, L)
+	# Compute viscosity at the faces of the cells
+	mu_faces = init_mu_faces(N, mu)
+	
+	for i in range(N+2):
 		if i > 0:
 			A[i, i-1] = mu_faces[i]/dy**2
 		if i < N-3:
 			A[i , i+1] = mu_faces[i+1]/dy**2
 		A[i,i] = -(mu_faces[i] + mu_faces[i+1])/dy**2
+	
+	c1_bot, c1_top = get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot)
+	
+	#bottom boundary condition
+	A[0,0] = 1
+	A[0,1] = c1_bot
+	A[-1,-1] = 1
+	A[-1,-2] = c1_top
+	
+	return A
 
-	if bndry_type == 'dirichlet':
-		A[0, :] = 0
-		A[0,0] = 1
+def assemble_b(N, L, mu, p_grad):
+	b = np.full(N+1, p_grad, dtype=float) # Right hand side
+	
+	dy = get_dy(N, L)
+	# Compute viscosity at the faces of the cells
+	mu_faces = init_mu_faces(N, mu)
+	
+	b[0], b[-1] = get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot, dy, mu_faces)
+	return b
 
-		A[-1, :] = 0
-		A[-1,-1] = 1
+def get_dy(N, L):
+	return L/N
 
-		b[0] = u_wall
-		b[-1] = u_wall
+def init_mu_faces(N,mu):
+	#create array of viscosity at gridpoints
+	viscosity=np.ones(N+1)*mu
+	mu_faces = (viscosity[:-1] + viscosity[1:])/2
+	return mu_faces
+    
+def get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot):
+	if bndry_bot == 'dirichlet':
+		c1_bot = 1
+	else:
+		c1_bot = -1
+		
+	if bndry_top == 'dirichlet':
+		c1_top = 1
+	else:
+		c1_top = -1
 
-	if bndry_type == 'neumann':
-		A[0, :] = 0
-		A[0,0] = 1
-		A[0,1] = -1
+	return c1_bot, c1_top
+    
+def get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_bot, dy, mu_faces):
+	if bndry_bot == 'dirichlet':
+		c2_bot = 2*bndry_val_bot
+	elif bndry_bot == 'neumann':
+		c2_bot = -dy*bndry_val_bot
+	else:
+		c2_bot = -dy*bndry_val_bot/(mu_faces[0])
+		
+	if bndry_top == 'dirichlet':
+		c2_tpo = 2*bndry_val_bot
+	elif bndry_top == 'neumann':
+		c2_top = dy*bndry_val_bot
+	else:
+		c2_top = dy*bndry_val_bot/(mu_faces[-1])
 
-		A[-1, :] = 0
-		A[-1,-1] = 1
-		A[-1,-2] = -1
-
-		b[0] = grad_wall*dy
-		b[-1] = grad_wall*dy
-
-		A[N//2, :] = 0
-		A[N//2, N//2] = 1  # Set velocity reference at middle
-		b[N//2] = 0  # Reference velocity set to zero (could be any value)
-
-	return A, b
+	return c2_bot, c2_top
