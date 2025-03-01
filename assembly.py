@@ -1,13 +1,11 @@
 import numpy as np
 import tools
 
-def assemble_A(N, L, mu, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
+def assemble_A(N, L, mu_faces, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	
 	A = np.zeros((N+1, N+1),dtype=float) # Coefficient matrix
 
 	dy = tools.get_dy(N, L)
-	# Compute viscosity at the faces of the cells
-	mu_faces = tools.init_mu_faces(N, mu)
 	
 	for i in range(1, N):
 		A[i, i-1] = mu_faces[i-1]/dy**2
@@ -26,12 +24,10 @@ def assemble_A(N, L, mu, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	
 	return A
 
-def assemble_b(N, L, mu, p_grad, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
+def assemble_b(N, L, mu_faces, p_grad, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
 	b = np.full(N+1, p_grad, dtype=float) # Right hand side
 	
 	dy = tools.get_dy(N, L)
-	# Compute viscosity at the faces of the cells
-	mu_faces = tools.init_mu_faces(N, mu)
 	
 	b[0], b[-1] = get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, dy, mu_faces)
 	return b
