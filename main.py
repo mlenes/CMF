@@ -33,13 +33,28 @@ def main():
 
     if opts.flow_type == 'turbulent':
         for i in range(opts.iterations):
-            #assume rho=1
-            mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L, opts.bndry_bot, opts.bndry_top)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
-            A = assembly.assemble_A(opts.N, opts.L, mu_eff, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
-            b = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
-            u_new = np.linalg.solve(A, b)
-            u += opts.rel_factor*(u_new-u)
-            # visuals.visualize(u)
+            #each iteration first loop until velocity profile matches eddy viscosity
+            #if flowrate is given, then check converged velocity profile with flowrate and if needed correct
+            u_corr = 10
+            while np.abs(np.mean(u_corr)) > 1e-5*np.mean(u):
+                #assume rho=1
+                mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L, opts.bndry_bot, opts.bndry_top)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
+                A = assembly.assemble_A(opts.N, opts.L, mu_eff, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
+                b = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
+                u_new = np.linalg.solve(A, b)
+                u_corr = u_new - u
+                u += opts.rel_factor*u_corr
+                
+            if opts.global_type=="flowrate":
+                error_flowrate = 10
+                while np.abs(error_flowrate) > 1e-3*opts.flowrate:
+                    #find corrected pressure gradient using calculated flowrate and assuming linear relation
+                    correction_flowrate =  (np.sum(u)*opts.L) / opts.flowrate
+                    p_grad /= correction_flowrate
+                    b_new = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
+                    u = np.linalg.solve(A, b_new)
+                    error_flowrate = np.sum(u)*opts.L - opts.flowrate 
+                    print(error_flowrate)
 
 
     else:
