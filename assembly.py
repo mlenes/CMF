@@ -12,15 +12,25 @@ def assemble_A(N, L, mu_faces, bndry_bot, bndry_top, bndry_val_bot, bndry_val_to
 		A[i , i+1] = mu_faces[i]/dy**2
 		A[i,i] = -(mu_faces[i-1] + mu_faces[i])/dy**2
 	
-	c1_bot, c1_top = get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top)
-	
 	#bottom boundary condition
 	A[0,0] = 1
-	A[0,1] = c1_bot
+	
+	if bndry_bot == 'dirichlet':
+		A[0,1] = 1
+	elif bndry_bot in ['neumann', 'stress']:
+		A[0,1] = -1
+	else:
+		print("Bot boundary condition not implemented")
 
 	#top boundary condition
 	A[-1,-1] = 1
-	A[-1,-2] = c1_top
+	
+	if bndry_top == 'dirichlet':
+		A[-1,-2] = 1
+	elif bndry_top in ['neumann', 'stress']:
+		A[-1,-2] = -1
+	else:
+		print("Top boundary condition not implemented")
 	
 	return A
 
@@ -29,47 +39,27 @@ def assemble_b(N, L, mu_faces, p_grad, bndry_bot, bndry_top, bndry_val_bot, bndr
 	
 	dy = tools.get_dy(N, L)
 	
-	b[0], b[-1] = get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, dy, mu_faces)
+	#bot boundary condition
+	if bndry_bot == 'dirichlet':
+		b[0] = 2*bndry_val_bot
+	elif bndry_bot == 'neumann':
+		b[0] = -dy*bndry_val_bot
+	elif bndry_bot == 'stress':
+		b[0] = -dy*bndry_val_bot/(mu_faces[0])
+	else:
+		print("Boundary type not implemented")
+		
+	#top boundary condition
+	if bndry_top == 'dirichlet':
+		b[-1] = 2*bndry_val_top
+	elif bndry_top == 'neumann':
+		b[-1] = -dy*bndry_val_top
+	elif bndry_top == 'stress':
+		b[-1] = -dy*bndry_val_top/(mu_faces[0])
+	else:
+		print("Boundary type not implemented")
+	
 	return b
     
-def get_c1_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top):
-	if bndry_bot == 'dirichlet':
-		c1_bot = 1
-	elif bndry_bot in ['neumann', 'stress']:
-		c1_bot = -1
-	else:
-		print("Boundary type not implemented")
-		
-	if bndry_top == 'dirichlet':
-		c1_top = 1
-	elif bndry_top in ['neumann', 'stress']:
-		c1_top = -1
-	else:
-		print("Boundary type not implemented")
-
-	return c1_bot, c1_top
-
-    
-def get_c2_coeff(bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, dy, mu_faces):
-	if bndry_bot == 'dirichlet':
-		c2_bot = 2*bndry_val_bot
-	elif bndry_bot == 'neumann':
-		c2_bot = -dy*bndry_val_bot
-	elif bndry_bot == 'stress':
-		c2_bot = -dy*bndry_val_bot/(mu_faces[0])
-	else:
-		print("Boundary type not implemented")
-		
-	if bndry_top == 'dirichlet':
-		c2_top = 2*bndry_val_top
-	elif bndry_top == 'neumann':
-		c2_top = dy*bndry_val_top
-	elif bndry_top == 'stress':
-		c2_top = dy*bndry_val_top/(mu_faces[-1])
-	else:
-		print("Boundary type not implemented")
-
-	return c2_bot, c2_top
-
 
 

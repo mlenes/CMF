@@ -1,10 +1,9 @@
 import numpy as np
-from CMF import options
+import options
 # from options import get_options
-# import assembly
-from CMF import assembly
-from CMF import visuals
-from CMF import tools
+import assembly
+import visuals
+import tools
 import matplotlib.pyplot as plt
 
 # import visuals
