@@ -16,7 +16,7 @@ def main():
         p_grad = opts.p_grad
     u_tau = np.sqrt(-p_grad*opts.L/(2*opts.rho_ref)) #assuming rho=1000
     
-    # Compute viscosity at the faces of the cells dimensionless
+    # Compute viscosity at the faces of the cells and make dimensionless
     mu_faces = tools.init_mu_faces(opts.N, opts.mu)/(u_tau*opts.L*opts.rho_ref)
     
     # Make p_grad and flowrate dimensionless
@@ -41,7 +41,6 @@ def main():
             #if flowrate is given, then check converged velocity profile with flowrate and if needed correct
             u_corr = 10
             while np.abs(np.mean(u_corr)) > 1e-5*np.mean(u):
-                #assume rho=1, so rho=rho_water
                 mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L, opts.bndry_bot, opts.bndry_top)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
                 A = assembly.assemble_A(opts.N, opts.L, mu_eff, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
                 b = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
@@ -53,11 +52,11 @@ def main():
                 error_flowrate = 10
                 while np.abs(error_flowrate) > 1e-3*flowrate:
                     #find corrected pressure gradient using calculated flowrate and assuming linear relation
-                    correction_flowrate =  (np.sum(u)*opts.L/opts.N) / flowrate
+                    correction_flowrate =  (np.sum(u)*tools.get_dy(opts.N, opts.L)) / flowrate
                     p_grad /= correction_flowrate
                     b_new = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
                     u = np.linalg.solve(A, b_new)
-                    error_flowrate = np.sum(u)*opts.L/opts.N - flowrate 
+                    error_flowrate = np.sum(u)*tools.get_dy(opts.N, opts.L) - flowrate 
         
     visuals.visualize(u*u_tau)
 

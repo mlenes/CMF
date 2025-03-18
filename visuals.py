@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def visualize(u):
-    plt.plot(u[1:-1], np.linspace(0,1,len(u)-2))
+    plt.plot(u, np.linspace(0,1,len(u)))
     plt.xlabel("u [m/s]")
     plt.ylabel("y/H [-]")
+    plt.ylim(0,1)
+    plt.xlim(0)
     plt.show()
