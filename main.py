@@ -13,10 +13,15 @@ def main():
     if opts.global_type == 'flowrate':
     	p_grad = -4*opts.flowrate/opts.L*opts.mu
     else:
-    	p_grad = opts.p_grad
+        p_grad = opts.p_grad
+    u_tau = np.sqrt(-p_grad*opts.L/(2*opts.rho_ref)) #assuming rho=1000
     
-    # Compute viscosity at the faces of the cells
-    mu_faces = tools.init_mu_faces(opts.N, opts.mu)
+    # Compute viscosity at the faces of the cells dimensionless
+    mu_faces = tools.init_mu_faces(opts.N, opts.mu)/(u_tau*opts.L*opts.rho_ref)
+    
+    # Make p_grad and flowrate dimensionless
+    p_grad /= (2*opts.rho_ref*u_tau)
+    flowrate = opts.flowrate/(u_tau*opts.L**2*opts.rho_ref)
     
     # Assemble the A matrix for calculating
     A = assembly.assemble_A(opts.N, opts.L, mu_faces, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
@@ -28,7 +33,7 @@ def main():
     u = np.linalg.solve(A, b)
     
     if opts.global_type=="flowrate":
-    	u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, A, u, opts.flowrate)
+    	u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, A, u, flowrate)
 
     if opts.flow_type == 'turbulent':
         for i in range(opts.iterations):
@@ -46,15 +51,15 @@ def main():
                 
             if opts.global_type=="flowrate":
                 error_flowrate = 10
-                while np.abs(error_flowrate) > 1e-3*opts.flowrate:
+                while np.abs(error_flowrate) > 1e-3*flowrate:
                     #find corrected pressure gradient using calculated flowrate and assuming linear relation
-                    correction_flowrate =  (np.sum(u)*opts.L/opts.N) / opts.flowrate
+                    correction_flowrate =  (np.sum(u)*opts.L/opts.N) / flowrate
                     p_grad /= correction_flowrate
                     b_new = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
                     u = np.linalg.solve(A, b_new)
-                    error_flowrate = np.sum(u)*opts.L/opts.N - opts.flowrate 
+                    error_flowrate = np.sum(u)*opts.L/opts.N - flowrate 
         
-    visuals.visualize(u)
+    visuals.visualize(u*u_tau)
 
 if __name__ == "__main__":
 	main()
