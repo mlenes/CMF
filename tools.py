@@ -18,3 +18,5 @@ def calc_mixing_length(N,L, bndry_bot, bndry_top):
     else:
         mixing_length = L * (np.full(N,0.14) - np.full(N,0.08) * (np.ones(N)-rel_height)**2 - np.full(N,0.06) * (np.ones(N)-rel_height)**4)
     return mixing_length
+    
+
