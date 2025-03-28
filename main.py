@@ -43,8 +43,8 @@ def main():
             u_corr = 10
             while np.abs(np.mean(u_corr)) > 1e-5*np.mean(u):
                 #calculate u_tau using newton raphson: u[1]/u_tau = 1/K * ln (y[1] * u_tau / opts.mu*opts.rho_ref) + 1/K * ln(32.6 / (u_tau*opts.Ks/ opts.mu*opts.rho_ref))
-                u_tau = u[1] * u_ref #some value for now 
-                tau_w = u_tau**2 / u_ref**2  #non-dimensional, so rho=1
+                u_tau = u[1] * 1/0.41 * np.log(1/0.031* tools.get_dy(opts.N, opts.L)/opts.Ks +1) #some value for now 
+                tau_w = u_tau**2 #non-dimensional, so rho=1
                 wall_constant = tau_w/u[1]
                 mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L, opts.bndry_bot, opts.bndry_top)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
                 A = assembly.assemble_A(opts.N, opts.L, mu_eff, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, True, wall_constant)
@@ -60,6 +60,11 @@ def main():
                     correction_flowrate =  (np.sum(u)*tools.get_dy(opts.N, opts.L)) / flowrate
                     p_grad /= correction_flowrate
                     b_new = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
+                    
+                    #here we don't change mu_eff and the wall constant, meaning if we loop here we only change the pressure forcing
+                    #even though u changes, we keep the old A
+                    #look into what is faster: loop here to adjust the pressure more and then start from top to find new u
+                    #or do 1 iteration here of adjusting the pressure and then calculate new velocity properly with converging mu_eff and wall fucntion
                     u = np.linalg.solve(A, b_new)
                     error_flowrate = np.sum(u)*tools.get_dy(opts.N, opts.L) - flowrate 
         
