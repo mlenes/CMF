@@ -43,8 +43,8 @@ def main():
             u_corr = 10
             while np.abs(np.mean(u_corr)) > 1e-5*np.mean(u):
                 #calculate u_tau using newton raphson: u[1]/u_tau = 1/K * ln (y[1] * u_tau / opts.mu*opts.rho_ref) + 1/K * ln(32.6 / (u_tau*opts.Ks/ opts.mu*opts.rho_ref))
-                u_tau = u[1] * 1/0.41 * np.log(1/0.031* tools.get_dy(opts.N, opts.L)/opts.Ks +1) #some value for now 
-                #u_tau = u[1] * 0.41 / (np.log((tools.get_dy(opts.N, opts.L)*32.6/2)/opts.Ks))
+                #u_tau = u[1] * 1/0.41 * np.log(1/0.031* tools.get_dy(opts.N, opts.L)/opts.Ks +1) #some value for now 
+                u_tau = u[1] * 0.41 / (np.log((tools.get_dy(opts.N, opts.L)*32.6/2)/opts.Ks))
                 tau_w = u_tau**2 #non-dimensional, so rho=1
                 wall_constant = tau_w/u[1]
                 mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L, opts.bndry_bot, opts.bndry_top)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
