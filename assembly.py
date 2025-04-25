@@ -18,7 +18,7 @@ def assemble_A(N, L, mu_faces, wall_function, wall_constant):
 		A[1,1] = -mu_faces[1]/dy**2 - wall_constant/dy
     
 	#top boundary condition   
-	A[1,-1] = 1
+	A[-1,-1] = 1
 	A[-1,-2] = 1
 	if wall_function == True:
 		A[-2,-1] = 0
