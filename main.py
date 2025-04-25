@@ -25,16 +25,16 @@ def main():
     flowrate = opts.flowrate/(u_ref*opts.L**2*opts.rho_ref)
     
     # Assemble the A matrix for calculating
-    A = assembly.assemble_A(opts.N, opts.L, mu_faces, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, False, 1)
+    A = assembly.assemble_A(opts.N, opts.L, mu_faces, False, 1)
     
     # Assemble the b vector
-    b = assembly.assemble_b(opts.N, opts.L, mu_faces, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
+    b = assembly.assemble_b(opts.N, opts.L, mu_faces, p_grad)
     
     # Compute u from linear equation Au = b
     u = np.linalg.solve(A, b)
     
     if opts.global_type=="flowrate":
-    	u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, A, u, flowrate)
+    	u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, A, u, flowrate)
 
     if opts.flow_type == 'turbulent':
         for i in range(opts.iterations):
@@ -47,15 +47,15 @@ def main():
                 u_tau = u[1] * 0.41 / (np.log((tools.get_dy(opts.N, opts.L)*32.6/2)/opts.Ks))
                 tau_w = u_tau**2 #non-dimensional, so rho=1
                 wall_constant = tau_w/u[1]
-                mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L, opts.bndry_bot, opts.bndry_top)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
-                A = assembly.assemble_A(opts.N, opts.L, mu_eff, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, True, wall_constant)
-                b = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top)
+                mu_eff = mu_faces + tools.calc_mixing_length(opts.N, opts.L)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(opts.N,opts.L)
+                A = assembly.assemble_A(opts.N, opts.L, mu_eff, True, wall_constant)
+                b = assembly.assemble_b(opts.N, opts.L, mu_eff, p_grad)
                 u_new = np.linalg.solve(A, b)
                 u_corr = u_new - u
                 u += opts.rel_factor*u_corr
                 
             if opts.global_type=="flowrate":
-                u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, A, u, flowrate)
+                u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, A, u, flowrate)
         
     visuals.visualize(u*u_ref)
 

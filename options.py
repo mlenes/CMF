@@ -14,10 +14,6 @@ def get_options():
     parser.add_argument("--global_type", help='Type of global boundary condition', type=str, default='flowrate')
     parser.add_argument("--flowrate", help='Flow rate global boundary condition [kg/s]', type=float, default=1000)
     parser.add_argument("--L", help="Width of the channel [m]", type=float, default=1)
-    parser.add_argument("--bndry_bot", help="Boundary condition type on bottom wall", type=str, default='dirichlet')
-    parser.add_argument("--bndry_top", help="Boundary condition type on top wall", type=str, default='dirichlet')
-    parser.add_argument("--bndry_val_bot", help="Boundary value on bottom wall", type=float, default=0)
-    parser.add_argument("--bndry_val_top", help="Boundary value on top wall", type=float, default=0)
     parser.add_argument("--flow_type", help="Either laminar or turbulent", type=str, default='turbulent')
     parser.add_argument("--rel_factor", help='Relaxation factor for updating turbulent velocity', type=float, default=0.5)
     

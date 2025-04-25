@@ -1,7 +1,7 @@
 import numpy as np
 import assembly
 
-def iter_flowrate(N, L, mu_faces, p_grad, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top, A, u, flowrate):
+def iter_flowrate(N, L, mu_faces, p_grad, A, u, flowrate):
 
 	# Dummy initial value
 	error_flowrate = 10
@@ -11,7 +11,7 @@ def iter_flowrate(N, L, mu_faces, p_grad, bndry_bot, bndry_top, bndry_val_bot, b
 		correction_flowrate =  (np.sum(u)*L/N) / flowrate
 		p_grad /= correction_flowrate
 		
-		b = assembly.assemble_b(N, L, mu_faces, p_grad, bndry_bot, bndry_top, bndry_val_bot, bndry_val_top)
+		b = assembly.assemble_b(N, L, mu_faces, p_grad)
 		u = np.linalg.solve(A, b)
 		
 		error_flowrate = np.sum(u)*L/N - flowrate
