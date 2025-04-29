@@ -3,7 +3,7 @@ import tools
 
 def assemble_A(N, L, mu_faces, wall_function, wall_constant):
 	A = np.zeros((N+1, N+1),dtype=float) # Coefficient matrix
-	dy = tools.get_dy(N, L)
+	dy = tools.get_dy(N, L)/L
  	
 	for i in range(1, N):
 		A[i, i-1] = mu_faces[i-1]/dy**2
@@ -28,8 +28,6 @@ def assemble_A(N, L, mu_faces, wall_function, wall_constant):
 
 def assemble_b(N, L, mu_faces, p_grad):
 	b = np.full(N+1, p_grad, dtype=float) # Right hand side
-	
-	dy = tools.get_dy(N, L)
 	
 	#bot boundary condition
 	b[0] = 0

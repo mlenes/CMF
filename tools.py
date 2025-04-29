@@ -11,9 +11,9 @@ def init_mu_faces(N,mu):
 	return mu_faces
 
 def calc_mixing_length(N,L):
-    #calculate mixing length at faces
+    #calculate mixing length at faces (non-dimensional)
     rel_height = np.linspace(0,L,N) / L
     mixing_length = L/2 * (np.full(N,0.14) - np.full(N,0.08) * (np.ones(N)-2*rel_height)**2 - np.full(N,0.06) * (np.ones(N)-2*rel_height)**4)
-    return mixing_length
+    return mixing_length/L
     
 
