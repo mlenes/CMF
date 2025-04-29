@@ -18,6 +18,6 @@ def calc_mixing_length(N,L):
     
 def get_sin_p(p0, T, t):
 	# Pressure difference over time with a sine
-	return A*np.sin(2*np.pi*t/T)
+	return 0.5*p0*np.cos(2*np.pi*t/T) + 0.5*p0
     
 
