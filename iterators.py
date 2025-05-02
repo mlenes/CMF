@@ -33,7 +33,8 @@ def iter_u(iterations, u, N, L, Ks, mu_faces, rel_factor, p_grad, global_type, f
             wall_constant = tau_w/u[1]
             
             # Eddy viscosity
-            mu_eff = mu_faces + tools.calc_mixing_length(N, L)**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(N, L)
+            l_m = tools.calc_mixing_length(N, L, u_tau, mu_faces[1])
+            mu_eff = mu_faces + l_m**2 * np.abs(u[:-1] - u[1:])/tools.get_dy(N, L)
             
             # Get turbulent A and b
             A = assembly.assemble_A(N, L, mu_eff, True, wall_constant)
