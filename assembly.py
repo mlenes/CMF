@@ -1,7 +1,7 @@
 import numpy as np
 import tools
 
-def assemble_A(N, L, mu_faces, wall_function, wall_constant):
+def assemble_A(N, L, mu_faces, wall_constant=None):
 	A = np.zeros((N+1, N+1),dtype=float) # Coefficient matrix
 	dy = tools.get_dy(N, L)/L
  	
@@ -13,14 +13,14 @@ def assemble_A(N, L, mu_faces, wall_function, wall_constant):
 	#bottom boundary condition
 	A[0,0] = 1
 	A[0,1] = 1
-	if wall_function == True:
+	if wall_constant != None:
 		A[1,0] = 0
 		A[1,1] = -mu_faces[1]/dy**2 - wall_constant/dy
     
 	#top boundary condition   
 	A[-1,-1] = 1
 	A[-1,-2] = 1
-	if wall_function == True:
+	if wall_constant != None:
 		A[-2,-1] = 0
 		A[-2,-2] = -mu_faces[-2]/dy**2 - wall_constant/dy
  	    

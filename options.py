@@ -11,8 +11,6 @@ def get_options():
 	parser.add_argument("--N", help='Amount of grid points', type=int, default=2000)
 	parser.add_argument("--mu", help='Molecular viscosity [Pas]', type=float, default=0.001)
 	parser.add_argument("--Ks", help='Sandgrain roughness [m]', type=float, default=0.001)
-	parser.add_argument("--global_type", help='Type of global boundary condition', type=str, default='pressure')
-	parser.add_argument("--flowrate", help='Flow rate global boundary condition [kg/s]', type=float, default=1000)
 	parser.add_argument("--L", help="Width of the channel [m]", type=float, default=1)
 	parser.add_argument("--flow_type", help="Either laminar or turbulent", type=str, default='turbulent')
 	parser.add_argument("--rel_factor", help='Relaxation factor for updating turbulent velocity', type=float, default=0.5)

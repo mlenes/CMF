@@ -17,7 +17,7 @@ def visualize(u_list):
 
 def particles(x_list,y0):
 	for i in range(len(x_list)):
-		plt.plot(x_list[i],np.ones(len(x_list[i]))*y0[i],".")
+		plt.plot(x_list[i],np.ones(len(x_list[i]))*y0[i], ".", label='particle')
 	plt.xlabel("x [m]")
 	plt.ylabel("y [m]")
 	plt.legend()

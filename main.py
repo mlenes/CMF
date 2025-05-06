@@ -4,7 +4,6 @@ import assembly
 import visuals
 import tools
 import iterators
-import matplotlib.pyplot as plt
 
 def main():
 	# Include the options from the parser
@@ -13,22 +12,17 @@ def main():
 	u_list = []
 	for t in range(opts.sim_time):
 
-		if opts.global_type == 'flowrate':
-			p_grad = -4*opts.flowrate/opts.L*opts.mu
-			u_ref = opts.flowrate / (opts.rho_ref*opts.L**2)
-		else:
-			p_grad = tools.get_sin_p(opts.p_grad, opts.pressure_period, t)
-			u_ref = np.sqrt(-p_grad*opts.L/(2*opts.rho_ref)) 
+		p_grad = tools.get_sin_p(opts.p_grad, opts.pressure_period, t)
+		u_ref = np.sqrt(-p_grad*opts.L/(2*opts.rho_ref)) 
 		
 		# Compute viscosity at the faces of the cells and make dimensionless
 		mu_faces = tools.init_mu_faces(opts.N, opts.mu)/(u_ref*opts.L*opts.rho_ref)
 
-		# Make p_grad and flowrate dimensionless
+		# Make p_grad dimensionless
 		p_grad /= (2*opts.rho_ref*u_ref)
-		flowrate = opts.flowrate/(u_ref*opts.L**2*opts.rho_ref)
 
 		# Assemble the A matrix for calculating
-		A = assembly.assemble_A(opts.N, opts.L, mu_faces, True, 1)
+		A = assembly.assemble_A(opts.N, opts.L, mu_faces)
 
 		# Assemble the b vector
 		b = assembly.assemble_b(opts.N, opts.L, mu_faces, p_grad)
@@ -36,11 +30,8 @@ def main():
 		# Compute u from linear equation Au = b
 		u = np.linalg.solve(A, b)
 		
-		if opts.global_type=="flowrate":
-			u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, A, u, flowrate)
-
 		if opts.flow_type == 'turbulent':
-			u, p_grad = iterators.iter_u(opts.iterations, u, opts.N, opts.L, opts.Ks, mu_faces, opts.rel_factor, p_grad, opts.global_type, flowrate)
+			u = iterators.iter_u(opts.iterations, u, opts.N, opts.L, opts.Ks, mu_faces, opts.rel_factor, p_grad)
         
 		#gehardcode oeps
 		y0 = np.array([int(0.01*opts.N), int(0.3*opts.N), int(0.5*opts.N)]) #nodenumber where we insert particle in channel

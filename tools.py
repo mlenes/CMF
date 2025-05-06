@@ -1,8 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 def get_dy(N, L):
 	return L/N
+
+def get_u_ref(p_grad, L, rho_ref):
+	return np.sqrt(-p_grad*L/(2*rho_ref)) 
 
 def init_mu_faces(N,mu):
 	#create array of viscosity at gridpoints
