@@ -13,13 +13,14 @@ def main():
 	for t in range(opts.sim_time):
 
 		p_grad = tools.get_sin_p(opts.p_grad, opts.pressure_period, t)
-		u_ref = np.sqrt(-p_grad*opts.L/(2*opts.rho_ref)) 
+		u_ref = tools.get_u_ref(p_grad, opts.L, opts.rho_ref)
 		
 		# Compute viscosity at the faces of the cells and make dimensionless
-		mu_faces = tools.init_mu_faces(opts.N, opts.mu)/(u_ref*opts.L*opts.rho_ref)
+		mu_faces = tools.init_mu_faces(opts.N, opts.mu)
 
-		# Make p_grad dimensionless
-		p_grad /= (2*opts.rho_ref*u_ref)
+		# Make p_grad and viscosity dimensionless
+		p_grad /= 2*opts.rho_ref*u_ref
+		mu_faces /= u_ref*opts.L*opts.rho_ref
 
 		# Assemble the A matrix for calculating
 		A = assembly.assemble_A(opts.N, opts.L, mu_faces)
