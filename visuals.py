@@ -15,9 +15,9 @@ def visualize(u_list):
 	ani = animation.FuncAnimation(fig=fig, func=update, frames=len(u_list), interval=100)
 	plt.show()
 
-def particles(x_list,y0):
+def particles(x_list,y_list):
 	for i in range(len(x_list)):
-		plt.plot(x_list[i],np.ones(len(x_list[i]))*y0[i], ".", label='particle')
+		plt.plot(x_list[i],y_list[i], ".", label='particle')
 	plt.xlabel("x [m]")
 	plt.ylabel("y [m]")
 	plt.legend()

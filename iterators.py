@@ -27,20 +27,32 @@ def iter_u(iterations, u, N, L, Ks, mu_faces, rel_factor, p_grad):
             
     return u
 
-def particle(y0, u, dt, tracktime, mu, D, M):
+def particle(y0, u, dt, tracktime, mu, D, M, g, N):
 	x_list = []
+	y_list = []
 	
 	#loop for every particle we inserted
 	for n in range(len(y0)):
 		x = np.zeros(int(tracktime/dt))
-		v = np.zeros(int(tracktime/dt))
+		y = np.zeros(int(tracktime/dt))
+		y[0] = y0[n]
+		vx = np.zeros(int(tracktime/dt))
+		vy = np.zeros(int(tracktime/dt))
 	
 		#update position and velocity by calculating force
 		for i in range(1,len(x)):
-			x[i] = x[i-1] + v[i-1]*dt
+			x[i] = x[i-1] + vx[i-1]*dt
+			y[i] = y[i-1] + vy[i-1]*dt
+			
 			f=0.1 #friction factor, heb ik random gekozen nu
-			F = f*3*np.pi*mu*D*(u[y0[n]]-v[i-1]) #now only drag force, all input is non-dimensional
-			v[i] = v[i-1] + 1/M * F * dt
+			Fx = f*3*np.pi*mu*D*(u[int(y0[n]*N)]-vx[i-1]) #now only drag force, all input is non-dimensional
+			vx[i] = vx[i-1] + 1/M * Fx * dt
+			
+			Fy = -M * g - f*3*np.pi*mu*D*vy[i-1] #stokes drag and gravity
+		 
+			vy[i] = vy[i-1] + 1/M * Fy * dt
+			print(Fy,Fx)
 		x_list.append(x)
+		y_list.append(y)
 		
-	return np.array(x_list) #this is the position of all particles over time
+	return np.array(x_list), np.array(y_list) #this is the position of all particles over time
