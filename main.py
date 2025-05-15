@@ -36,13 +36,14 @@ def main():
         
 		#gehardcode oeps
 		y0 = np.array([0.01, 0.3, 0.5]) #non-dimensional height where we insert particle in channel
+		v0 = np.array([4, 1])  #non-dimensional starting velocity
 		
 		M = opts.M / (opts.rho_ref*opts.L**3)  #non-dimensional weight of particle
 		g = 9.81 * opts.L/ u_ref**2  #non-dimensional gravitational acceleration
-		x_list, y_list = iterators.particle(y0,u,opts.dt,opts.tracktime,mu_faces[1],opts.D,M,g,opts.N)
+		x_list, y_list = iterators.particle(y0,v0,u,opts.dt,opts.tracktime,mu_faces[1],opts.D,M,g,opts.N)
 		
 		visuals.particles(x_list*opts.L,y_list*opts.L)
-		
+		print(u[1000])
 		u_list.append(u*u_ref)
 	u_list = np.array(u_list)
 	visuals.visualize(u_list)

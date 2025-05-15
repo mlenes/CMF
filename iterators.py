@@ -27,17 +27,20 @@ def iter_u(iterations, u, N, L, Ks, mu_faces, rel_factor, p_grad):
             
     return u
 
-def particle(y0, u, dt, tracktime, mu, D, M, g, N):
+def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N):
 	x_list = []
 	y_list = []
+	sim_steps = int(tracktime/dt)
 	
 	#loop for every particle we inserted
 	for n in range(len(y0)):
-		x = np.zeros(int(tracktime/dt))
-		y = np.zeros(int(tracktime/dt))
+		x = np.zeros(sim_steps)
+		y = np.zeros(sim_steps)
 		y[0] = y0[n]
-		vx = np.zeros(int(tracktime/dt))
-		vy = np.zeros(int(tracktime/dt))
+		vx = np.zeros(sim_steps)
+		vx[0] = v0[0]
+		vy = np.zeros(sim_steps)
+		vy[0] = v0[1]
 	
 		#update position and velocity by calculating force
 		for i in range(1,len(x)):
@@ -51,7 +54,9 @@ def particle(y0, u, dt, tracktime, mu, D, M, g, N):
 			Fy = -M * g - f*3*np.pi*mu*D*vy[i-1] #stokes drag and gravity
 		 
 			vy[i] = vy[i-1] + 1/M * Fy * dt
-			print(Fy,Fx)
+			
+			if y[i]<0 or y[i]>1:
+				vy[i] = -vy[i-1]
 		x_list.append(x)
 		y_list.append(y)
 		
