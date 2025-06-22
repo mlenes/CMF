@@ -28,5 +28,25 @@ def calc_mixing_length(N,L,u_tau,mu):
 def get_sin_p(p0, T, t):
 	# Pressure difference over time with a sine
 	return 0.5*p0*np.cos(2*np.pi*t/T) + 0.5*p0
+
+def Gaussian(sigma,x):
+    prob = 1/(sigma*np.sqrt(2*np.pi))*np.exp(-x**2/(2*sigma**2))
+    return prob
+    
+def choose_vprime(u_prime):
+    loop = True
+    while loop==True:
+        if u_prime==0:
+            return 0
+            break
+        random1 = 100*u_prime*(2*np.random.rand(1)-1)
+        prob = Gaussian(u_prime,random1)
+        random2 = 1/(u_prime*np.sqrt(2*np.pi))*np.random.rand(1)
+        if prob>random2:
+            return random1
+            break
+    
+    
+	
     
 
