@@ -21,3 +21,13 @@ def particles(x_list,y_list):
 	plt.xlabel("x [m]")
 	plt.ylabel("y [m]")
 	plt.legend()
+	plt.show()
+    
+def wallprofile(L,N,n,conversion,uplus):
+	channel=np.linspace(0,(n-1)/N,n)
+	plt.figure()
+	plt.plot(channel*conversion,uplus[1:n+1],".")	
+	plt.xlabel('y+')
+	plt.ylabel("u+")
+	plt.xscale('log')
+	plt.show()
