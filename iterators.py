@@ -37,6 +37,7 @@ def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N, L, u_prime):
 	sim_steps = int(tracktime/dt)
 	vprime = np.zeros(len(y0))
 	eddytime = np.zeros(len(y0))
+# 	eddytime = np.ones(len(y0))*tracktime
 	f=0.1 #friction factor, heb ik random gekozen nu
 	
 	#loop for every particle we inserted
@@ -66,13 +67,13 @@ def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N, L, u_prime):
 				T_e = 0.15/dUdy #eddy lifetime
 				T_r = (np.abs(vprime[n])/dUdy) / np.max([np.abs(vy[i-1]),np.abs(u[gridcell]-vx[i-1])]) #residence time
 				eddytime[n]+= np.min([T_e,T_r]) #check in how much time this eddy will last				
-# 				print(vprime[n],eddytime[n])
+				print(vprime[n],eddytime[n])
 
 			Fx = f*3*np.pi*mu*D*(u[gridcell]+vprime[n]-vx[i-1]) #now only drag force, all input is non-dimensional
 			
 			vx[i] = vx[i-1] + 1/M * Fx * dt	
 				
-			Fy = -M * g + f*3*np.pi*mu*D*(vprime[n]-vy[i-1]) #stokes drag and gravity
+			Fy = (np.pi*D**3/6-M) * g + f*3*np.pi*mu*D*(vprime[n]-vy[i-1]) #stokes drag and gravity
 		 
 			vy[i] = vy[i-1] + 1/M * Fy * dt
 			
