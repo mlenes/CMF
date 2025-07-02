@@ -41,10 +41,10 @@ def main():
 # 		print("y_plus=",y_plus)
 		
 		#gehardcode oeps
-		y0 = np.array([0.4]) #non-dimensional height where we insert particle in channel
-		v0 = np.array([1, 0])  #non-dimensional starting velocity
+		y0 = np.array([0.1,0.3,0.5]) #non-dimensional height where we insert particle in channel
+		v0 = np.array([0, 0])  #non-dimensional starting velocity
 		
-		M = opts.M / (opts.rho_ref*opts.L**3)  #non-dimensional weight of particle
+		M = opts.rho_p / opts.rho_ref *np.pi*(opts.D/opts.L)**3/6  #non-dimensional weight of particle
 		g = 9.81 * opts.L/ u_ref**2  #non-dimensional gravitational acceleration
 		x_list, y_list = iterators.particle(y0,v0,u,opts.dt,opts.tracktime,mu_faces[1],opts.D,M,g,opts.N,opts.L,u_prime)
 		visuals.particles(x_list*opts.L,y_list*opts.L)
@@ -57,14 +57,24 @@ def main():
 # 	conversion = u_tau*u_ref*opts.rho_ref/opts.mu
 # 	n=50 #how many points you want to plot
 # 	visuals.wallprofile(opts.L,opts.N,n,conversion,uplus)
-    
+
 	#make a plot of the mixing length function
 # 	plt.figure()
-# 	channel=np.linspace(0,1,100)
-# 	mixing_length = tools.calc_mixing_length(100, 1, 100, 0.01)
-# 	plt.plot(channel,mixing_length)
+# 	channel=np.linspace(0,1,10000)
+# 	mixing_length = tools.calc_mixing_length(N=10000, L=1, u_tau=0.01, mu=4e-7)
+# 	y_plus = (channel * 0.01) / 4e-7
+# 	A_plus = 25
+# 	D = (1-np.exp(-y_plus/A_plus))
+# 	mixing_lengthD = mixing_length*D
+# 	plt.plot(channel[:-9000],mixing_length[:-9000],label="no damping")
+# 	plt.plot(channel[:-9000],mixing_lengthD[:-9000],label="van Driest damping")
 # 	plt.xlabel("y/H")
 # 	plt.ylabel("$l_m$/H")
+# 	plt.xscale('log')
+# 	plt.yscale('log')
+# 	plt.ylim(1e-6,1e-1)
+# 	plt.xlim(1e-4,1e-1)
+# 	plt.legend()
 # 	plt.show()
 		
 	u_list = np.array(u_list)
