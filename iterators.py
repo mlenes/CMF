@@ -38,7 +38,7 @@ def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N, L, u_prime):
 	vprime = np.zeros(len(y0))
 	eddytime = np.zeros(len(y0))
 # 	eddytime = np.ones(len(y0))*tracktime
-	f=0.1 #friction factor, heb ik random gekozen nu
+	f=0.01 #friction factor, heb ik random gekozen nu
 	
 	#loop for every particle we inserted
 	for n in range(len(y0)):
@@ -56,7 +56,7 @@ def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N, L, u_prime):
 		for i in range(1,len(x)):
 			x[i] = x[i-1] + vx[i-1]*dt
 			y[i] = y[i-1] + vy[i-1]*dt
-			gridcell = int(y[i-1]*N)
+			gridcell = int(y[i-1]*N)%N
 			
 			
 			#if eddy died or particle passed through eddy, make a new one
@@ -71,13 +71,13 @@ def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N, L, u_prime):
 
 			Fx = f*3*np.pi*mu*D*(u[gridcell]+vprime[n]-vx[i-1]) #now only drag force, all input is non-dimensional
 			
-			vx[i] = vx[i-1] + 1/M * Fx * dt	
+			vx[i] = vx[i-1] + 1/(1.5*M) * Fx * dt	
 				
 			Fy = (np.pi*D**3/6-M) * g + f*3*np.pi*mu*D*(vprime[n]-vy[i-1]) #stokes drag and gravity
 		 
-			vy[i] = vy[i-1] + 1/M * Fy * dt
+			vy[i] = vy[i-1] + 1/(1.5*M) * Fy * dt
 			
-			if y[i]<0 or y[i]>1:
+			if y[i]<0.5*D or y[i]>(1-0.5*D):
 				vy[i] = -vy[i-1]
 		x_list.append(x)
 		y_list.append(y)
