@@ -71,11 +71,11 @@ def particle(y0, v0, u, dt, tracktime, mu, D, M, g, N, L, u_prime):
 
 			Fx = f*3*np.pi*mu*D*(u[gridcell]+vprime[n]-vx[i-1]) #now only drag force, all input is non-dimensional
 			
-			vx[i] = vx[i-1] + 1/(1.5*M) * Fx * dt	
+			vx[i] = vx[i-1] + 1/(M+0.5*np.pi*D**3/6) * Fx * dt	#added mass and non-dimensionally rho_fluid=1
 				
 			Fy = (np.pi*D**3/6-M) * g + f*3*np.pi*mu*D*(vprime[n]-vy[i-1]) #stokes drag and gravity
 		 
-			vy[i] = vy[i-1] + 1/(1.5*M) * Fy * dt
+			vy[i] = vy[i-1] + 1/(M+0.5*np.pi*D**3/6) * Fy * dt #added mass
 			
 			if y[i]<0.5*D or y[i]>(1-0.5*D):
 				vy[i] = -vy[i-1]
