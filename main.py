@@ -57,7 +57,7 @@ def main():
             if opts.global_type=="flowrate":
                 u, p_grad = iterators.iter_flowrate(opts.N, opts.L, mu_faces, p_grad, opts.bndry_bot, opts.bndry_top, opts.bndry_val_bot, opts.bndry_val_top, A, u, flowrate)
         
-    visuals.visualize(u*u_ref)
+    visuals.visualize(u*u_ref, opts.p_grad, opts.mu, opts.L)
 
 if __name__ == "__main__":
 	main()
